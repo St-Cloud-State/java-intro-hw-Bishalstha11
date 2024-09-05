@@ -1,0 +1,64 @@
+import java.io.*;
+import java.util.LinkedList;
+
+class PersonList {
+    private LinkedList<Person> personList = new LinkedList<>();
+
+    // Store method to read input data and store in linked list
+    public void store(InputStream inputStream) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] parts = line.split(","); // Assume data format is "firstName,lastName,id"
+            if (parts.length == 3) {
+                personList.add(new Person(parts[0], parts[1], parts[2]));
+            }
+        }
+    }
+
+    // Display method to write person data to output stream
+    public void display(OutputStream outputStream) throws IOException {
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
+        for (Person person : personList) {
+            writer.write(person.toString());
+            writer.newLine();
+        }
+        writer.flush();
+    }
+
+    // Find method to search for person by ID
+    public int find(String sid) {
+        for (int i = 0; i < personList.size(); i++) {
+            if (personList.get(i).getId().equals(sid)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+}
+
+public class MyMain {
+    public static void main(String[] args) throws IOException {
+        PersonList personList = new PersonList();
+
+        // Create a sample data input stream (e.g., from a file or string)
+        String data = "John,Doe,1\nJane,Smith,2\nAlice,Johnson,3";
+        InputStream inputStream = new ByteArrayInputStream(data.getBytes());
+
+        // Store the data in the linked list
+        personList.store(inputStream);
+
+        // Display the data from the linked list
+        System.out.println("Displaying all persons:");
+        personList.display(System.out);
+
+        // Search for a person by ID
+        String searchId = "2";
+        int index = personList.find(searchId);
+        if (index != -1) {
+            System.out.println("Person with ID " + searchId + " found at index " + index);
+        } else {
+            System.out.println("Person with ID " + searchId + " not found.");
+        }
+    }
+}
