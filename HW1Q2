@@ -1,0 +1,92 @@
+import java.io.*;
+import java.util.LinkedList;
+
+public class MyMain {
+
+    // Store method to read input data and store in linked list
+    public static void store(InputStream inputStream, LinkedList<Person> personList) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length == 3) {
+                    personList.add(new Person(parts[0].trim(), parts[1].trim(), parts[2].trim()));
+                } else {
+                    System.out.println("Invalid data format: " + line);
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading data: " + e.getMessage());
+        }
+    }
+
+    // Display method to write person data to output stream
+    public static void display(OutputStream outputStream, LinkedList<Person> personList) {
+        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
+            for (Person person : personList) {
+                writer.write(person.toString());
+                writer.newLine();
+            }
+            writer.flush();
+        } catch (IOException e) {
+            System.err.println("Error writing data: " + e.getMessage());
+        }
+    }
+
+    // Find method to search for person by ID
+    public static int find(String sid, LinkedList<Person> personList) {
+        for (int i = 0; i < personList.size(); i++) {
+            if (personList.get(i).getId().equals(sid)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    // Main method
+    public static void main(String[] args) {
+        LinkedList<Person> personList = new LinkedList<>();
+
+        // Sample data input stream
+        String data = "John,Doe,1\nJane,Smith,2\nAlice,Johnson,3\nInvalidData";
+        InputStream inputStream = new ByteArrayInputStream(data.getBytes());
+
+        // Store the data in the linked list
+        store(inputStream, personList);
+
+        // Display the data from the linked list
+        System.out.println("Displaying all persons:");
+        display(System.out, personList);
+
+        // Search for a person by ID
+        String searchId = "2";
+        int index = find(searchId, personList);
+        if (index != -1) {
+            System.out.println("Person with ID " + searchId + " found at index " + index);
+        } else {
+            System.out.println("Person with ID " + searchId + " not found.");
+        }
+    }
+}
+
+// Sample Person class
+class Person {
+    private String firstName;
+    private String lastName;
+    private String id;
+
+    public Person(String firstName, String lastName, String id) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    @Override
+    public String toString() {
+        return firstName + " " + lastName + " (ID: " + id + ")";
+    }
+}
